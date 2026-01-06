@@ -1,0 +1,30 @@
+# File: docker-compose.dev.yml
+# Description: Development overrides for hot-reloading and local mounting
+
+services:
+  web:
+    # Mount source code for live updates
+    volumes:
+      - ./src:/app/src
+      - ./alembic.ini:/app/alembic.ini
+      - ./migrations:/app/migrations
+    # Enable auto-reload
+    command: /bin/bash -c "alembic upgrade head && uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload"
+    # Expose debugger port if needed (optional)
+    environment:
+      - LOG_LEVEL=DEBUG
+
+  worker:
+    # Worker needs code updates too
+    volumes:
+      - ./src:/app/src
+    # Auto-reload for Celery is tricky, usually requires restart, 
+    # but mounting ensures the next restart picks up code.
+    # We use watchdog here to auto-restart celery on file change:
+    command: watchmedo auto-restart --directory=./src --pattern=*.py --recursive -- celery -A src.app.tasks.worker worker --loglevel=info
+
+  nginx:
+    # Mount frontend files for live HTML/CSS/JS updates
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro

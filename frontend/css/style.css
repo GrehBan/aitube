@@ -1,0 +1,54 @@
+/* File: frontend/css/style.css */
+/* Description: Global Styles */
+
+:root {
+    --bg-color: #0f0f0f;
+    --text-color: #ffffff;
+    --accent: #3ea6ff;
+    --secondary: #272727;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: Roboto, Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #202020;
+    align-items: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.video-card {
+    background: var(--secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.video-thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+}
+
+#player-container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+video {
+    width: 100%;
+    height: auto;
+}

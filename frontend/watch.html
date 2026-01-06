@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Watch - AITube</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+    <div id="player-container">
+        <video id="video" controls></video>
+    </div>
+    <div id="video-info">
+        <h1 id="video-title"></h1>
+        <p id="video-desc"></p>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('v');
+        const video = document.getElementById('video');
+
+        async function loadVideo() {
+            const res = await fetch(`/api/v1/videos/${videoId}`);
+            const data = await res.json();
+            
+            document.getElementById('video-title').textContent = data.title;
+            document.getElementById('video-desc').textContent = data.description;
+            
+            // MinIO S3 URL construction (Proxied via Nginx ideally, but direct for MVP)
+            const videoSrc = `http://localhost:9000/aitube-videos/${data.hls_manifest_path}`;
+            
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
+            }
+        }
+        loadVideo();
+    </script>
+</body>
+</html>
